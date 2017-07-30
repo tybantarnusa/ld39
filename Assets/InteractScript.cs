@@ -22,7 +22,7 @@ public class InteractScript : MonoBehaviour {
         if (Physics.Raycast(ray, out hit))
         {
             GameObject hitObject = hit.transform.gameObject;
-            if (hitObject.CompareTag("Charger") || hitObject.CompareTag("Powerbank"))
+            if (hitObject.CompareTag("Charger") || hitObject.CompareTag("Powerbank") || hitObject.CompareTag("PowerOutlet"))
             {
                 if(Vector3.Distance(transform.position, hitObject.transform.position) < 2f) { 
                     indicator.SetActive(true);
@@ -39,6 +39,14 @@ public class InteractScript : MonoBehaviour {
                         {
                             GetComponent<PlayerScript>().SetPowerbank(true);
                             Destroy(hitObject);
+                        }
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.Alpha1))
+                    {
+                        if (hitObject.CompareTag("PowerOutlet"))
+                        {
+                            GetComponent<PlayerScript>().Charge(hitObject);
                         }
                     }
                 }
