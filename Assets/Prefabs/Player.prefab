@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 33152679319860358}
   - component: {fileID: 23993818960420998}
   - component: {fileID: 95266632847648858}
+  - component: {fileID: 114380171591227222}
   m_Layer: 0
   m_Name: Hape
   m_TagString: Untagged
@@ -126,7 +127,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1561699083762698}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 72.7, y: 0, z: -97.8}
+  m_LocalPosition: {x: 72, y: 0, z: -98}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4883117151885644}
@@ -383,7 +384,7 @@ Light:
   m_Type: 0
   m_Color: {r: 0.9950304, g: 1, b: 0.6397059, a: 1}
   m_Intensity: 2
-  m_Range: 45
+  m_Range: 35
   m_SpotAngle: 91
   m_CookieSize: 10
   m_Shadows:
@@ -543,6 +544,24 @@ MonoBehaviour:
   rigidbodyFirstPersonController: {fileID: 114399763397982360}
   StrideInterval: 4
   RunningStrideLengthen: 0.722
+--- !u!114 &114380171591227222
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1239580901592820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 984a0432a362dcc45a14451c0d90c084, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 1561699083762698}
+  textures:
+  - {fileID: 2800000, guid: f2f8c51175bf34942b6336c6e9bfa290, type: 3}
+  - {fileID: 2800000, guid: 24a108505f9ecfd408665ecab5f2edf2, type: 3}
+  - {fileID: 2800000, guid: ba9858fd94cbe2f42a71712f939ecfa4, type: 3}
+  - {fileID: 2800000, guid: 5b1db65f39c4a624ebefc8b9081e803a, type: 3}
+  - {fileID: 2800000, guid: c70fbf23b2510834bb2a91b78af29493, type: 3}
 --- !u!114 &114399763397982360
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -613,6 +632,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5a0452b0eb49ae4a93465db0fe1db60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  batteryPercentageUI: {fileID: 0}
+  loseUI: {fileID: 0}
+  winUI: {fileID: 0}
   flashlight: {fileID: 1917144224457332}
 --- !u!114 &114840857720875538
 MonoBehaviour:

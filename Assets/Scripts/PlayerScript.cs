@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using UnityStandardAssets.Characters.FirstPerson;
 
 public class PlayerScript : MonoBehaviour {
 
     [SerializeField]
     private GameObject batteryPercentageUI;
+
+    public GameObject loseUI;
+    public GameObject winUI;
 
     private bool hasCharger;
     private bool hasPowerbank;
@@ -22,8 +26,14 @@ public class PlayerScript : MonoBehaviour {
     private int battery;
     private float timer;
 
+    private float dieTimer;
+
+    private bool isWin;
+
     [SerializeField]
     private GameObject flashlight;
+	
+	private bool playLoseSoundOnce;
 
 	void Start () {
         hasCharger = false;
@@ -38,16 +48,55 @@ public class PlayerScript : MonoBehaviour {
         timer = 0f;
 
         powerbankPower = 0;
+
+        dieTimer = 0f;
+		
+		playLoseSoundOnce = false;
 	}
 	
 	void Update () {
         timer += Time.deltaTime;
 
         HandleInput();
-        DischargingPhone();
+        if (!isWin)
+            DischargingPhone();
         Charging();
         ChargingPortably();
 
+        battery = Mathf.Clamp(battery, 0, 100);
+
+         if (battery == 0)
+        {
+            dieTimer += Time.deltaTime;
+        }
+
+        if (dieTimer > 5)
+        {
+            GameObject.Find("Fader").GetComponent<RawImage>().color = new Color(0, 0, 0, Mathf.CeilToInt((dieTimer / 10f) * 255f));
+        }
+
+        if (dieTimer > 7f)
+        {
+            loseUI.SetActive(true);
+            DisableControl();
+            if (!transform.GetChild(1).GetComponent<AudioSource>().isPlaying && !playLoseSoundOnce)
+            {
+				playLoseSoundOnce = true;
+                GetComponent<AudioSource>().Stop();
+                transform.GetChild(1).GetComponent<AudioSource>().Play();
+            }
+            if (Input.anyKeyDown && !transform.GetChild(1).GetComponent<AudioSource>().isPlaying)
+            {
+                SceneManager.LoadScene("TitleScreen");
+            }
+        }
+
+        if (isWin)
+        {
+            winUI.SetActive(true);
+            DisableControl();
+            GetComponent<AudioSource>().Stop();
+        }
     }
 
     private void LateUpdate()
@@ -67,16 +116,27 @@ public class PlayerScript : MonoBehaviour {
             usingFlashlight = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (isWin)
+        {
+            if (Input.anyKeyDown && !GameObject.Find("Win Trigger").GetComponent<AudioSource>().isPlaying)
+            {
+                SceneManager.LoadScene("TitleScreen");
+            }
+        }
+        
+
+        if (Input.GetKeyDown(KeyCode.Alpha2) && hasCharger && powerbankPower > 0)
         {
             ChargePortably();
         }
+
     }
 
     private void DischargingPhone()
     {
         if (isCharging || isChargingPortably) return;
 
+        batteryPercentageUI.GetComponent<Text>().color = Color.white;
         if (usingFlashlight && timer > 2)
         {
             battery--;
@@ -93,12 +153,13 @@ public class PlayerScript : MonoBehaviour {
     {
         if (!hasCharger || !isCharging) return;
 
-        if (usingFlashlight && timer > 5)
+        batteryPercentageUI.GetComponent<Text>().color = new Color(215, 234, 31);
+        if (usingFlashlight && timer > 1)
         {
             battery++;
             timer = 0;
         }
-        else if (!usingFlashlight && timer > 2)
+        else if (!usingFlashlight && timer > 0.5f)
         {
             battery++;
             timer = 0;
@@ -109,9 +170,10 @@ public class PlayerScript : MonoBehaviour {
     {
         if (!hasPowerbank || !isChargingPortably || powerbankPower <= 0) return;
 
+        batteryPercentageUI.GetComponent<Text>().color = new Color(215, 234, 31);
         if (usingFlashlight && timer > 4)
         {
-            if (timer > 10)
+            if (timer > 2)
             {
                 powerbankPower-=3;
                 battery++;
@@ -190,13 +252,15 @@ public class PlayerScript : MonoBehaviour {
             isCharging = true;
             isChargingPortably = false;
             DisableControl();
+            transform.position = new Vector3(outlet.transform.GetChild(0).position.x, transform.position.y, outlet.transform.GetChild(0).position.z);
             transform.LookAt(outlet.transform);
         }
-        else
-        {
-            isCharging = false;
-            EnableControl();
-        }
+    }
+    
+    public void UnplugCharge()
+    {
+        isCharging = false;
+        EnableControl();
     }
 
     public void DisableControl()
@@ -207,5 +271,15 @@ public class PlayerScript : MonoBehaviour {
     public void EnableControl()
     {
         GetComponent<RigidbodyFirstPersonController>().enabled = true;
+    }
+
+    public int GetBatteryLife()
+    {
+        return battery;
+    }
+
+    public void SetWin()
+    {
+        isWin = true;
     }
 }
